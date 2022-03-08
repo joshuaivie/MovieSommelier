@@ -22,6 +22,9 @@ module.exports = {
     ],
   },
   devServer: {
-    static: './dist',
+    static: {
+      directory: __dirname,
+    },
+    compress: true,
   },
 };
