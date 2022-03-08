@@ -1,38 +1,44 @@
-import { getList } from "./tvmaze-api";
-import './images/like.svg'
+import { getList } from './tvmaze-api';
+import './images/like.svg';
 
-export default class Home{
-    pages;
-    constructor(container = document.body, pageLength = 9){
-        this.container = container;
-        this.homeElement = document.createElement('section');
-        this.homeElement.classList.add('home');
-        this.series = [];
-        this.pageLength = pageLength;
-        this.page = 0;
+export default class Home {
+  pages;
+
+  _series;
+
+  constructor(container = document.body, pageLength = 9) {
+    this.container = container;
+    this.homeElement = document.createElement('section');
+    this.homeElement.classList.add('home');
+    this.series = [];
+    this.pageLength = pageLength;
+    this.page = 0;
+  }
+
+  get series() {
+    // eslint-disable-next-line no-underscore-dangle
+    return this._series;
+  }
+
+  set series(value) {
+    this.pages = [];
+    for (let i = 0; i < value.length; i += this.pageLength) {
+      this.pages.push(value.slice(i, i + this.pageLength));
     }
+    // eslint-disable-next-line no-underscore-dangle
+    this._series = value;
+  }
 
-    get series(){
-        return this._series;
-    }
-    set series(value){
-        this.pages = [];
-        for (var i = 0; i < value.length; i += this.pageLength)
-          this.pages.push(value.slice(i, i + this.pageLength));
-        this._series = value;
-    }
+  async init() {
+    this.series = await getList();
+    this.container.appendChild(this.homeElement);
+    this.updateList();
+  }
 
-     async init(){
-        this.series = await getList();
-        this.container.appendChild(this.homeElement);
-        this.updateList();
-    }
-
-
-    updateList(){
-        this.homeElement.innerHTML = `
-        <ul class="movie-list">
-            ${this.pages[this.page].map(series => `
+  updateList() {
+    this.homeElement.innerHTML = `
+        <ul class="movie-list"> 
+            ${this.pages[this.page].map((series) => `
             <li class="movie card">
                 <img src="${series.image.medium}">
                 <header>
@@ -46,18 +52,18 @@ export default class Home{
                 <a class="btn">Reservations</a>
             </li>`).join('')}
         </ul>
-        ${this.pages.length > 0?
-            `<div class="paginator">
+        ${this.pages.length > 0
+    ? `<div class="paginator">
                 <a href="#home" class="btn">1</a>
                 <span>...</span>
                 <a href="#home" class="btn">5</a>
                 <a href="#home" class="btn">6</a>
                 <a href="#home" class="btn">7</a>
-                <a href="#home" class="btn">8</a>
+                <a href="#home" class="btn">8</a> 
                 <a href="#home" class="btn">9</a>
                 <span>...</span>
                 <a href="#home" class="btn">99</a>
-        </div>`:''}
-        `
-    }
+        </div>` : ''}
+        `;
+  }
 }
