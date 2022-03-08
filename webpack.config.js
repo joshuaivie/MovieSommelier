@@ -11,6 +11,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'dist'),
+    assetModuleFilename: 'images/[name][ext]',
     clean: true,
   },
   module: {
@@ -19,12 +20,13 @@ module.exports = {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource'
+      },
     ],
   },
   devServer: {
-    static: {
-      directory: __dirname,
-    },
-    compress: true,
+    static: './dist',
   },
 };

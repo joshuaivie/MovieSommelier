@@ -1,1 +1,59 @@
 @import url("https://fonts.googleapis.com/css2?family=Anton&family=Assistant&display=swap");
+
+:root {
+  /* colors */
+  --primary-color: #111;
+  --text-color: #eee;
+
+  /* fonts */
+  --title-font: 'Anton', sans-serif;
+  --text-font: 'Assistant', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--primary-color);
+  color: var(--text-color);
+  font-family: var(--text-font);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: var(--title-font);
+}
+
+a {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* header */
+
+header {
+  display: flex;
+  height: 68px;
+  padding: 10px 0;
+  justify-content: center;
+}
+
+nav > ul {
+  list-style: none;
+  justify-content: flex-end;
+  display: flex;
+  width: calc(80vw - 85px);
+  font-weight: bold;
+}
+
+/* footer */
+
+/* home */
+
+/* details */
