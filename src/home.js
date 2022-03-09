@@ -39,6 +39,8 @@ export default class Home {
   }
 
   async init() {
+    this.navigate(window.location.hash);
+    window.addEventListener('popstate', () => this.navigate(window.location.hash));
     try {
       this.series = await getList();
       (await getLikesList()).forEach((element) => {
@@ -47,6 +49,17 @@ export default class Home {
     } finally {
       this.container.appendChild(this.homeElement);
       this.updateList();
+    }
+  }
+
+  navigate(hash) {
+    if(hash === '') hash = '#home/1';
+    if (hash.startsWith('#home/')) {
+      const page = Number.parseInt(hash.split('/')[1], 10)-1;
+      if (this.page !== page) {
+        this.page = page;
+        if (page < this.pages.length) this.updateList();
+      }
     }
   }
 
@@ -67,18 +80,19 @@ export default class Home {
                 <a class="btn">Reservations</a>
             </li>`).join('')}
         </ul>
-        ${this.pages.length > 0
-    ? `<div class="paginator">
-                <a href="#home" class="btn">1</a>
-                <span>...</span>
-                <a href="#home" class="btn">5</a>
-                <a href="#home" class="btn">6</a>
-                <a href="#home" class="btn">7</a>
-                <a href="#home" class="btn">8</a> 
-                <a href="#home" class="btn">9</a>
-                <span>...</span>
-                <a href="#home" class="btn">99</a>
-        </div>` : ''}
+        ${this.paginator()}
         `;
+  }
+
+  paginator() {
+    return this.pages.length > 0 ? `<div class="paginator">
+      ${this.page > 4 ? `<a href="#home/1" class="btn">1</a>
+      <span>...</span>` : ''}
+      ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
+      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 3), 0)) // eslint-disable-next-line indent
+      .map((page) => `<a href="#home/${page+1}" class="btn">${page + 1}</a>`).join('')}
+      ${this.pages.length - this.page > 5 ? `<span>...</span>
+      <a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
+    </div>` : '';
   }
 }
