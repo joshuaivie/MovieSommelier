@@ -8,7 +8,7 @@ export async function like(item_id) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id }),
-    }).then((response) => response.json());
+    }).then((response) => response.text());
 }
 export async function getLikesList() {
   return fetch(`${BASE_URL}/apps/${APP_ID}/likes`).then((response) => response.json());

@@ -114,6 +114,14 @@ body > footer {
   grid-template-columns: 1fr 1fr 1fr;
   grid-gap: 40px;
   margin-block: 40px;
+  padding: 0;
+}
+
+.img-placeholder {
+  background: aliceblue;
+  height: calc((80vw - 40px) * 0.43);
+  display: flex;
+  flex-direction: column;
 }
 
 li.movie.card {

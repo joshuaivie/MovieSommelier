@@ -1,6 +1,6 @@
 import { getList } from './tvmaze-api';
 import './images/like.svg';
-import { getLikesList } from './Involvement-api';
+import { getLikesList, like } from './Involvement-api';
 
 export default class Home {
   pages;
@@ -16,6 +16,11 @@ export default class Home {
     this.series = [];
     this.pageLength = pageLength;
     this.page = 0;
+    this.like = (e) => like(e.currentTarget.dataset.id)
+      .then(async () => {
+        this.updateLikes(await getLikesList());
+        this.updateList();
+      });
   }
 
   get series() {
@@ -43,13 +48,17 @@ export default class Home {
     window.addEventListener('popstate', () => this.navigate(window.location.hash));
     try {
       this.series = await getList();
-      (await getLikesList()).forEach((element) => {
-        this.seriesMap[element.item_id].likes = element.likes;
-      });
+      this.updateLikes(await getLikesList());
     } finally {
       this.container.appendChild(this.homeElement);
       this.updateList();
     }
+  }
+
+  updateLikes(likes) {
+    likes.forEach((element) => {
+      this.seriesMap[element.item_id].likes = element.likes;
+    });
   }
 
   navigate(hash) {
@@ -65,23 +74,26 @@ export default class Home {
 
   updateList() {
     this.homeElement.innerHTML = `
-        <ul class="movie-list"> 
-            ${this.pages[this.page].map((series) => `
-            <li class="movie card">
+      <ul class="movie-list"> 
+          ${this.pages[this.page].map((series) => `
+          <li class="movie card">
+              <div class="img-placeholder">
                 <img src="${series.image.medium}">
-                <header>
-                    <h2>${series.name}</h2>
-                    <div class="likes">
-                        <button class="like"><img src="./images/like.svg"></button>
-                        <span>${series.likes} likes</span>
-                    </div>
-                </header>
-                <a href="#details/${series.id}" class="btn">Coments</a>
-                <a class="btn">Reservations</a>
-            </li>`).join('')}
-        </ul>
-        ${this.paginator()}
-        `;
+              </div>
+              <header>
+                  <h2>${series.name}</h2>
+                  <div class="likes">
+                      <button class="like" data-id="${series.id}"><img src="./images/like.svg"></button>
+                      <span>${series.likes} likes</span>
+                  </div>
+              </header>
+              <a href="#details/${series.id}" class="btn">Coments</a>
+              <a class="btn">Reservations</a>
+          </li>`).join('')}
+      </ul>
+      ${this.paginator()}
+      `;
+    document.querySelectorAll('.like').forEach((likeBtn) => likeBtn.addEventListener('click', this.like));
   }
 
   paginator() {
