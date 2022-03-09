@@ -76,7 +76,7 @@ export default class Home {
                         <span>${series.likes} likes</span>
                     </div>
                 </header>
-                <a class="btn">Coments</a>
+                <a href="#details/${series.id}" class="btn">Coments</a>
                 <a class="btn">Reservations</a>
             </li>`).join('')}
         </ul>
