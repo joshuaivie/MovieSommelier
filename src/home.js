@@ -1,8 +1,11 @@
 import { getList } from './tvmaze-api';
 import './images/like.svg';
+import { getLikesList } from './Involvement-api';
 
 export default class Home {
   pages;
+
+  seriesMap;
 
   _series;
 
@@ -22,6 +25,12 @@ export default class Home {
 
   set series(value) {
     this.pages = [];
+    this.seriesMap = {};
+    value.map((series) => {
+      series.likes = 0;
+      this.seriesMap[series.id] = series;
+      return series;
+    });
     for (let i = 0; i < value.length; i += this.pageLength) {
       this.pages.push(value.slice(i, i + this.pageLength));
     }
@@ -30,9 +39,28 @@ export default class Home {
   }
 
   async init() {
-    this.series = await getList();
-    this.container.appendChild(this.homeElement);
-    this.updateList();
+    this.navigate(window.location.hash);
+    window.addEventListener('popstate', () => this.navigate(window.location.hash));
+    try {
+      this.series = await getList();
+      (await getLikesList()).forEach((element) => {
+        this.seriesMap[element.item_id].likes = element.likes;
+      });
+    } finally {
+      this.container.appendChild(this.homeElement);
+      this.updateList();
+    }
+  }
+
+  navigate(hash) {
+    if (hash === '') hash = '#home/1';
+    if (hash.startsWith('#home/')) {
+      const page = Number.parseInt(hash.split('/')[1], 10) - 1;
+      if (this.page !== page) {
+        this.page = page;
+        if (page < this.pages.length) this.updateList();
+      }
+    }
   }
 
   updateList() {
@@ -45,25 +73,26 @@ export default class Home {
                     <h2>${series.name}</h2>
                     <div class="likes">
                         <button class="like"><img src="./images/like.svg"></button>
-                        <span>5 likes</span>
+                        <span>${series.likes} likes</span>
                     </div>
                 </header>
-                <a class="btn">Coments</a>
+                <a href="#details/${series.id}" class="btn">Coments</a>
                 <a class="btn">Reservations</a>
             </li>`).join('')}
         </ul>
-        ${this.pages.length > 0
-    ? `<div class="paginator">
-                <a href="#home" class="btn">1</a>
-                <span>...</span>
-                <a href="#home" class="btn">5</a>
-                <a href="#home" class="btn">6</a>
-                <a href="#home" class="btn">7</a>
-                <a href="#home" class="btn">8</a> 
-                <a href="#home" class="btn">9</a>
-                <span>...</span>
-                <a href="#home" class="btn">99</a>
-        </div>` : ''}
+        ${this.paginator()}
         `;
+  }
+
+  paginator() {
+    return this.pages.length > 0 ? `<div class="paginator">
+      ${this.page > 4 ? `<a href="#home/1" class="btn">1</a>
+      <span>...</span>` : ''}
+      ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
+      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 3), 0)) // eslint-disable-next-line indent
+      .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
+      ${this.pages.length - this.page > 5 ? `<span>...</span>
+      <a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
+    </div>` : '';
   }
 }
