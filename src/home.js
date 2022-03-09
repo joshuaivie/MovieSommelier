@@ -1,8 +1,11 @@
 import { getList } from './tvmaze-api';
 import './images/like.svg';
+import { getLikesList } from './Involvement-api';
 
 export default class Home {
   pages;
+
+  seriesMap;
 
   _series;
 
@@ -22,6 +25,12 @@ export default class Home {
 
   set series(value) {
     this.pages = [];
+    this.seriesMap = {};
+    value.map((series) => {
+      series.likes = 0;
+      this.seriesMap[series.id] = series;
+      return series;
+    });
     for (let i = 0; i < value.length; i += this.pageLength) {
       this.pages.push(value.slice(i, i + this.pageLength));
     }
@@ -30,9 +39,15 @@ export default class Home {
   }
 
   async init() {
-    this.series = await getList();
-    this.container.appendChild(this.homeElement);
-    this.updateList();
+    try {
+      this.series = await getList();
+      (await getLikesList()).forEach((element) => {
+        this.seriesMap[element.item_id].likes = element.likes;
+      });
+    } finally {
+      this.container.appendChild(this.homeElement);
+      this.updateList();
+    }
   }
 
   updateList() {
@@ -45,7 +60,7 @@ export default class Home {
                     <h2>${series.name}</h2>
                     <div class="likes">
                         <button class="like"><img src="./images/like.svg"></button>
-                        <span>5 likes</span>
+                        <span>${series.likes} likes</span>
                     </div>
                 </header>
                 <a class="btn">Coments</a>
