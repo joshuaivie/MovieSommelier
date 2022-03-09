@@ -118,8 +118,8 @@ body > footer {
 }
 
 .img-placeholder {
-  background: aliceblue;
-  height: calc((80vw - 40px) * 0.43);
+  background: #ddd4;
+  height: calc((80vw - 97px) * 0.468);
   display: flex;
   flex-direction: column;
 }
