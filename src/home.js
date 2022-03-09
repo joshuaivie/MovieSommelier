@@ -53,9 +53,9 @@ export default class Home {
   }
 
   navigate(hash) {
-    if(hash === '') hash = '#home/1';
+    if (hash === '') hash = '#home/1';
     if (hash.startsWith('#home/')) {
-      const page = Number.parseInt(hash.split('/')[1], 10)-1;
+      const page = Number.parseInt(hash.split('/')[1], 10) - 1;
       if (this.page !== page) {
         this.page = page;
         if (page < this.pages.length) this.updateList();
@@ -90,7 +90,7 @@ export default class Home {
       <span>...</span>` : ''}
       ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
       .slice(Math.max(Math.min(this.pages.length - 5, this.page - 3), 0)) // eslint-disable-next-line indent
-      .map((page) => `<a href="#home/${page+1}" class="btn">${page + 1}</a>`).join('')}
+      .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
       ${this.pages.length - this.page > 5 ? `<span>...</span>
       <a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
     </div>` : '';
