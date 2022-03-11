@@ -184,3 +184,60 @@ body > footer {
   z-index: 5;
   padding: 3rem;
 }
+
+.series-highlights {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.series-title {
+  font-size: 2rem;
+  font-weight: 900;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.series-language,
+.series-rating {
+  margin-right: 10px;
+}
+
+.series-lang-rating {
+  display: flex;
+}
+
+.series-language img {
+  border-radius: 50%;
+}
+
+.series-genre {
+  display: flex;
+  align-items: center;
+}
+
+.series-genre li {
+  margin-right: 10px;
+  padding: 3px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+}
+
+.series-rating {
+  display: flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+}
+
+.series-rating i {
+  color: gold;
+  margin-right: 5px;
+}
+
+.series-description {
+  color: #d5d5d5;
+  line-height: 1.5;
+  padding: 10px 0;
+}
