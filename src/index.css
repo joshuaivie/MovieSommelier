@@ -1,15 +1,29 @@
-@import url("https://fonts.googleapis.com/css2?family=Anton&family=Assistant&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap");
 
 :root {
   /* colors */
   --primary-color: #000;
   --secondary-color: #1835b1;
   --secondary-color-light: #495aa1;
-  --text-color: #eee;
+  --text-color: #c5c5c5;
+  --title-color: #fff;
 
   /* fonts */
-  --title-font: "Anton", sans-serif;
-  --text-font: "Assistant", sans-serif;
+  --title-font: "Inter", sans-serif;
+  --text-font: "Inter", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  background: #dedede;
+  -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 50%);
 }
 
 ul {
@@ -27,6 +41,8 @@ body {
   background: var(--primary-color);
   color: var(--text-color);
   font-family: var(--text-font);
+  font-weight: 400;
+  line-height: 1.5;
 }
 
 main {
@@ -155,7 +171,6 @@ li.movie.card {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 70%;
   margin: auto;
   border-radius: 20px;
   overflow: hidden;
@@ -163,15 +178,39 @@ li.movie.card {
   background-color: #000;
   box-shadow: 0 0 100px 0 rgb(0 0 0 / 10%);
   border: 1px solid rgba(255, 255, 255, 0.25);
+  width: 80%;
+  max-height: 85vh;
 }
 
-.details-image-container {
+.image-container {
   width: 40%;
   position: relative;
   box-shadow: inset 0 0 300px 0 rgb(0 0 0);
 }
 
-.details-image-container .details-image {
+.close-button {
+  position: absolute;
+  z-index: 10;
+  top: 1.25rem;
+  right: 1.25rem;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  height: 2.25rem;
+  width: 2.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.image-container .image {
   width: 100%;
   height: 100%;
   position: relative;
@@ -197,10 +236,6 @@ li.movie.card {
   box-shadow: 0 0 10px 0 rgb(0 0 0 / 50%);
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-.like-action:hover {
-  transform: scale(0.95) translate(-50%, -50%);
 }
 
 .like-action .like-icon {
@@ -256,7 +291,10 @@ li.movie.card {
 .details-container-content {
   position: relative;
   z-index: 5;
-  padding: 3rem;
+  margin: 2.5rem;
+  padding: 0 1.5rem;
+  overflow-y: scroll;
+  height: calc(100% - 5rem);
 }
 
 .series-highlights {
@@ -265,11 +303,21 @@ li.movie.card {
   justify-content: space-between;
 }
 
-.series-title {
+.series-title,
+.series-subtitle {
+  font-family: var(--title-font);
+  color: var(--title-color);
   font-size: 2rem;
   font-weight: 900;
   display: block;
   margin-bottom: 10px;
+  letter-spacing: -1px;
+}
+
+.series-subtitle {
+  margin-bottom: 15px;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 .series-language,
@@ -283,6 +331,7 @@ li.movie.card {
 
 .series-language img {
   border-radius: 50%;
+  vertical-align: middle;
 }
 
 .series-genre {
@@ -313,5 +362,112 @@ li.movie.card {
 .series-description {
   color: #d5d5d5;
   line-height: 1.5;
-  padding: 10px 0;
+  padding: 0 0 10px 0;
+}
+
+.details-section,
+.add-comment-section,
+.comments-list-section {
+  padding-bottom: 10px;
+}
+
+.add-comment-form input,
+.add-comment-form textarea {
+  padding: 10px;
+  display: block;
+  width: 100%;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #212529;
+  background-color: #e5e5e5;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  margin-bottom: 15px;
+  border-radius: 7.5px;
+  font-size: 14px;
+}
+
+.add-comment-form input:focus,
+.add-comment-form textarea:focus {
+  color: #212529;
+  background-color: #fff;
+  border-color: #86b7fe;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 25%);
+}
+
+.add-comment-form input::placeholder,
+.add-comment-form textarea::placeholder {
+  font-size: 14px;
+  color: #495057;
+}
+
+.comment-form-buttons {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.comment-form-buttons * {
+  margin-left: 10px;
+}
+
+.add-comment-form button {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 7.5px;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.add-comment-form button.light-button {
+  color: var(--text-color);
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.comments-list .comment {
+  display: flex;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 7.5px;
+  margin-bottom: 15px;
+}
+
+.comments-list .comment .avatar {
+  margin-right: 1rem;
+}
+
+.comments-list .comment .avatar img {
+  width: 50px;
+  border-radius: 50%;
+}
+
+.comments-list .comment .comment-content {
+  flex: 1;
+}
+
+.comments-list .comment .comment-content .comment-content-title {
+  display: flex;
+  margin-bottom: 5px;
+  color: #fff;
+}
+
+.comments-list
+  .comment
+  .comment-content
+  .comment-content-title
+  .commenter-name {
+  font-weight: 700;
+  color: #fff;
+  margin-right: 10px;
 }
