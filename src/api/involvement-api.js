@@ -8,7 +8,7 @@ export async function postLike(item_id) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ item_id }),
-    }).then((response) => response.json());
+    }).then((response) => response);
 }
 
 export async function getLikesList() {

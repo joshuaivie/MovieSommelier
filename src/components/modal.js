@@ -25,13 +25,6 @@ export default class DetailsModal {
     this.listenForCloseModal();
   }
 
-  static countComments(commentsList) {
-    if (Array.isArray(commentsList)) {
-      return commentsList.length;
-    }
-    throw new Error('Expected comment list to be an array');
-  }
-
   loadModalTemplate() {
     this.detailsModalElement.innerHTML = ModalTemplate;
   }
@@ -43,7 +36,7 @@ export default class DetailsModal {
       const locationHash = window.location.hash;
       const detailsID = this.parseDetailsID(locationHash);
 
-      if (locationHash.indexOf('details') && detailsID) {
+      if (locationHash.includes('details') && detailsID) {
         try {
           this.currentID = detailsID;
 
@@ -55,7 +48,6 @@ export default class DetailsModal {
           this.updateModalDetails();
           this.updateModalViewState();
         } catch (error) {
-          console.log(error);
           this.errors.push(`${error.name} - ${error.message}`);
           alert(`An error occured trying to load details for ${this.currentDetails.name}`);
         }
@@ -89,16 +81,6 @@ export default class DetailsModal {
         this.errors.push(`${error.name} - ${error.message}`);
         alert('An error occured trying post your comment');
       }
-    };
-  }
-
-  createCommentObject(username, comment) {
-    this.changed = true;
-    return {
-      comment,
-      username,
-      creation_date: moment().format('LL'),
-      creation_unix_time: moment().format('X'),
     };
   }
 
@@ -142,6 +124,24 @@ export default class DetailsModal {
     this.changed = true;
     const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10);
     return detailsID;
+  }
+
+  countComments(commentsList) {
+    this.changed = true;
+    if (Array.isArray(commentsList)) {
+      return commentsList.length;
+    }
+    throw new Error('Expected comment list to be an array');
+  }
+
+  createCommentObject(username, comment) {
+    this.changed = true;
+    return {
+      comment,
+      username,
+      creation_date: moment().format('LL'),
+      creation_unix_time: moment().format('X'),
+    };
   }
 
   updateModalViewState() {
