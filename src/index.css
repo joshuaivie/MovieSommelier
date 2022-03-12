@@ -1,17 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap");
 
-:root {
-  /* colors */
-  --primary-color: #111;
-  --secondary-color: #1835b1;
-  --secondary-color-light: #495aa1;
-  --text-color: #eee;
-
-  /* fonts */
-  --title-font: "Inter", sans-serif;
-  --text-font: "Inter", sans-serif;
-}
-
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -23,6 +11,19 @@
   border-radius: 4px;
   background: #dedede;
   -webkit-box-shadow: inset 0 0 6px rgb(0 0 0 / 50%);
+}
+
+:root {
+  /* colors */
+  --primary-color: #000;
+  --secondary-color: #1835b1;
+  --secondary-color-light: #495aa1;
+  --text-color: #c5c5c5;
+  --title-color: #fff;
+
+  /* fonts */
+  --title-font: "Inter", sans-serif;
+  --text-font: "Inter", sans-serif;
 }
 
 ul {
@@ -151,6 +152,24 @@ li.movie.card {
   gap: 7px;
 }
 
+.add-comment-form button {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 7.5px;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
 .movie.card .btn,
 .movie.card button {
   align-self: center;
@@ -238,7 +257,7 @@ li.movie.card {
 }
 
 .like-action .like-icon {
-  text-shadow: 0px 5px rgb(0 0 0 / 30%);
+  text-shadow: 0 5px rgb(0 0 0 / 30%);
   transition: all 0.2s ease;
 }
 
@@ -290,12 +309,7 @@ li.movie.card {
   width: 15%;
   height: 100%;
   right: 100%;
-  background-image: linear-gradient(
-    to right,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.5) 50%,
-    rgba(0, 0, 0, 0.9) 100%
-  );
+  background-image: linear-gradient(to right, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.5) 50%, rgba(0, 0, 0, 0.9) 100%);
 }
 
 .details-container-content {
@@ -423,21 +437,6 @@ li.movie.card {
   margin-left: 10px;
 }
 
-.add-comment-form button {
-  color: #fff;
-  background-color: rgba(255, 255, 255, 0.1);
-  text-align: center;
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 10px 15px;
-  font-size: 14px;
-  border-radius: 7.5px;
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
-    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-}
-
 .add-comment-form button.light-button {
   color: var(--text-color);
   background-color: transparent;
@@ -472,11 +471,7 @@ li.movie.card {
   color: #fff;
 }
 
-.comments-list
-  .comment
-  .comment-content
-  .comment-content-title
-  .commenter-name {
+.comments-list .comment .comment-content .comment-content-title .commenter-name {
   font-weight: 700;
   color: #fff;
   margin-right: 10px;
