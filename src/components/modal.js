@@ -1,7 +1,8 @@
-import { getDetails } from "../api/tvmaze-api";
-import { getCommentList } from "../api/Involvement-api";
-import getFlagURL from "./flagHelpers";
 import moment from 'moment';
+import getFlagURL from "./flagHelpers";
+import ModalTemplate from "./modalTemplate"
+import { getDetails } from "../api/tvmaze-api";
+import { postComment, getCommentList } from "../api/Involvement-api";
 
 export default class DetailsModal {
 
@@ -19,7 +20,13 @@ export default class DetailsModal {
   init() {
     this.loadModalTemplate()
     this.listenForOpenModal()
+    this.listenForAddComment()
+    this.listForCancelComment()
     this.listenForCloseModal()
+  }
+
+  loadModalTemplate() {
+    this.detailsModalElement.innerHTML = ModalTemplate
   }
 
   listenForOpenModal() {
@@ -50,15 +57,50 @@ export default class DetailsModal {
     }
   }
 
-  formatComments(comments) {
-    return comments.map(comment => {
-      return {
-        ...comment,
-        creation_date: moment(comment.creation_date).format('LL'),
-        creation_unix_time: moment(comment.creation_date).format('X')
-      }
+  listenForAddComment() {
+    const commentInput = document.getElementById('comment-input');
+    const commentForm = document.getElementById('add-comment-form');
+    const commentsContainer = document.getElementById('modal-comments-list')
+    const commenterNameInput = document.getElementById('commenter-name-input');
 
-    }).sort((a, b) => a.creation_unix_time - b.creation_unix_time)
+    commentForm.onsubmit = async (e) => {
+      e.preventDefault()
+      let username = commenterNameInput.value
+      let comment = commentInput.value
+      this.clearCommentForm()
+      try {
+        if (username && comment) {
+          await postComment(this.currentID, username, comment)
+          const commentObject = this.createCommentObject(username, comment)
+          const commentElement = this.createCommentElement(commentObject)
+          commentsContainer.appendChild(commentElement)
+          this.commentsList.push(commentObject)
+        } else {
+          throw new Error('Input both username and comment')
+        }
+      } catch (error) {
+        this.errors.push(`${error.name} - ${error.message}`)
+        alert(`An error occured trying post your comment`)
+      }
+    }
+  }
+
+  createCommentObject(username, comment) {
+    return {
+      comment,
+      username,
+      creation_date: moment().format('LL'),
+      creation_unix_time: moment().format('X')
+    }
+  }
+
+  listForCancelComment() {
+    const cancelCommentButton = document.getElementById('cancel-comment-button');
+
+    cancelCommentButton.onclick = (e) => {
+      e.preventDefault()
+      this.clearCommentForm()
+    }
   }
 
   listenForCloseModal() {
@@ -69,6 +111,24 @@ export default class DetailsModal {
       this.visible = false
       this.updateModalViewState()
     }
+  }
+
+  formatComments(comments) {
+    return comments.map(comment => {
+      return {
+        ...comment,
+        creation_date: moment(comment.creation_date).format('LL'),
+        creation_unix_time: moment(comment.creation_date).format('X')
+      }
+
+    }).sort((a, b) => b.creation_unix_time - a.creation_unix_time)
+  }
+
+  clearCommentForm() {
+    const commenterNameInput = document.getElementById('commenter-name-input');
+    const commentInput = document.getElementById('comment-input');
+    commenterNameInput.value = ''
+    commentInput.value = ''
   }
 
   parseDetailsID(locationHash = window.location.hash) {
@@ -166,72 +226,4 @@ export default class DetailsModal {
       </div>`
     return comment
   }
-
-  loadModalTemplate() {
-    this.detailsModalElement.innerHTML = `
-    <section class="details-popup" id="details-modal">
-    <div class="close-button" id="modal-close-button">
-      <i class="fa-solid fa-close"></i>
-    </div>
-    <div class="image-container">
-      <img src="#" class="image" id="modal-display-image">
-      <div class="like-action">
-        <div class="like-icon">
-          <i class="fa-solid fa-heart"></i>
-        </div>
-        <div class="like-count">30</div>
-      </div>
-    </div>
-    <div class="details-container">
-      <div class="details-container-image" id="modal-background-image"></div>
-      <div class="details-container-image-overlay"></div>
-      <div class="details-container-backdrop"></div>
-      <div class="details-container-content">
-        <div class="details-section">
-          <div class="series-title" id="modal-series-title"></div>
-          <div class="series-highlights">
-            <div class="series-lang-rating">
-              <div class="series-language" id="series-language">
-                <img src="#" width="20px" id="modal-series-langauage">
-              </div>
-              <div class="series-rating">
-                <i class="fa-solid fa-star"></i>
-                <div id="modal-series-rating"></div>
-              </div>
-              <ul class="series-genre" id="modal-series-genre"></ul>
-            </div>
-            <p id="modal-series-runtime"></p>
-          </div>
-          <div class="series-description" id="modal-series-description"></div>
-        </div>
-      <div class="comments-container">
-        <div class="add-comment-section">
-          <div class="series-subtitle">Add Comment</div>
-          <form  class="add-comment-form">
-            <ul>
-              <li>
-                <input type="text" placeholder="Enter Your Name" name="commenter-name-input" id="commenterNameInput" required>
-              </li>
-              <li>
-                <textarea rows="5" type="number" id="commentInput" name="coment-input" required min="1"
-                  placeholder="Enter Your Comment" required></textarea>
-              </li>
-              <li class="comment-form-buttons">
-                <button type="submit" class="light-button" id="submitScoreButton">Cancel</button>
-                <button type="submit" id="submitScoreButton">Comment</button>
-              </li>
-            </ul>
-          </form>
-        </div>
-        <div class="comments-list-section">
-          <div class="series-subtitle">Comment(s)</div>
-          <ul class="comments-list" id="modal-comments-list"></ul>
-        </div>
-        </div>
-      </div>
-    </div>
-  </section>
-    `
-  }
-
 }
