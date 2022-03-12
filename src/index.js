@@ -1,6 +1,6 @@
 import './index.css';
 import './images/Logo.png';
-import Home from './home';
+import Home from './components/home';
 import DetailsModal from './components/modal';
 
 const home = new Home(document.getElementById('main'));

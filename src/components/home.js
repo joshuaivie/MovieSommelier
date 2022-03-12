@@ -1,6 +1,6 @@
-import { getList } from './api/tvmaze-api';
-import './images/like.svg';
-import { getLikesList, postLike } from './api/involvement-api';
+import '../images/like.svg';
+import { getList } from '../api/tvmaze-api';
+import { getLikesList, postLike } from '../api/involvement-api';
 
 export async function seriesCount(promise) {
   return promise.then((list) => {
