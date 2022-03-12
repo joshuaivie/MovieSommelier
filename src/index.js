@@ -1,9 +1,9 @@
 import './index.css';
 import './images/Logo.png';
 import Home from './home';
-import CommentViewer from './components/comments';
+import DetailsModal from './components/modal';
 
 const home = new Home(document.getElementById('main'));
-const commentViewer = new CommentViewer();
+const modal = new DetailsModal();
 home.init();
-commentViewer.init();
+modal.init();
