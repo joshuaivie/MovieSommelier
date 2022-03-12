@@ -25,11 +25,11 @@ export default class DetailsModal {
     this.listenForCloseModal()
   }
 
-  countComments(commentsList = this.commentsList) {
-    if (typeof commentsList) {
+  countComments(commentsList) {
+    if (Array.isArray(commentsList)) {
       return commentsList.length
     } else {
-      return new Error('Excpected comment list to be an array')
+      throw new Error('Expected comment list to be an array')
     }
   }
 
