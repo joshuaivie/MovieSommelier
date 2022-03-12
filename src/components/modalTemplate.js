@@ -6,12 +6,6 @@ const ModalTemplate = `
     <div class="details-popup">
       <div class="image-container">
         <img src="#" class="image" id="modal-display-image">
-        <div class="like-action">
-          <div class="like-icon">
-            <i class="fa-solid fa-heart"></i>
-          </div>
-          <div class="like-count">30</div>
-        </div>
       </div>
       <div class="details-container">
         <div class="details-container-image" id="modal-background-image"></div>

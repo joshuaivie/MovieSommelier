@@ -1,4 +1,4 @@
-import { seriesCount } from './home';
+import { seriesCount } from '../components/home';
 
 const getList = jest.fn(async () => [
   { id: 1, name: 'a', image: { medium: '' } },

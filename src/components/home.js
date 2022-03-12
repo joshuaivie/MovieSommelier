@@ -1,6 +1,7 @@
-import { getList } from './api/tvmaze-api';
-import './images/like.svg';
-import { getLikesList, postLike } from './api/involvement-api';
+/* eslint-disable no-underscore-dangle */
+import '../images/like.svg';
+import { getList } from '../api/tvmaze-api';
+import { getLikesList, postLike } from '../api/involvement-api';
 
 export async function seriesCount(promise) {
   return promise.then((list) => {
@@ -16,22 +17,23 @@ export default class Home {
 
   _series;
 
-  constructor(container = document.body, pageLength = 9) {
+  constructor(container = document.body, pageLength = 10) {
     this.container = container;
     this.homeElement = document.createElement('section');
     this.homeElement.classList.add('home');
     this.series = [];
     this.pageLength = pageLength;
     this.page = 0;
-    this.like = (e) => postLike(e.currentTarget.dataset.id)
-      .then(async () => {
-        this.updateLikes(await getLikesList());
-        this.updateList();
-      });
+    this.like = (e) => {
+      postLike(e.currentTarget.dataset.id)
+        .then(async () => {
+          this.updateLikes(await getLikesList());
+          this.updateList();
+        });
+    };
   }
 
   get series() {
-    // eslint-disable-next-line no-underscore-dangle
     return this._series;
   }
 
@@ -46,7 +48,6 @@ export default class Home {
     for (let i = 0; i < value.length; i += this.pageLength) {
       this.pages.push(value.slice(i, i + this.pageLength));
     }
-    // eslint-disable-next-line no-underscore-dangle
     this._series = value;
   }
 
@@ -81,7 +82,7 @@ export default class Home {
 
   updateList() {
     this.homeElement.innerHTML = `
-      ${this.series.count ? `<div class="paginator">${this.series.count} total items</div>` : ''}
+      ${this.series.count ? `<div class="series-count"><span class="bold">${this.series.count}</span> total items</div>` : ''}
       <ul class="movie-list"> 
           ${this.pages[this.page].map((series) => `
           <li class="movie card">
@@ -92,16 +93,17 @@ export default class Home {
                   <h2>${series.name}</h2>
                   <div class="likes">
                       <button class="like" data-id="${series.id}"><img src="./images/like.svg"></button>
-                      <span>${series.likes} likes</span>
+                      <span>${series.likes} like${series.likes !== 1 ? 's' : ''}</span>
                   </div>
               </header>
               <a href="#details/${series.id}" class="btn">Coments</a>
-              <a class="btn">Reservations</a>
           </li>`).join('')}
       </ul>
       ${this.paginator()}
       `;
-    document.querySelectorAll('.like').forEach((likeBtn) => likeBtn.addEventListener('click', this.like));
+    document.querySelectorAll('.like').forEach((likeBtn) => {
+      likeBtn.addEventListener('click', this.like);
+    });
   }
 
   paginator() {
