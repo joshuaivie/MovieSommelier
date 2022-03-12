@@ -1,115 +1,114 @@
 import moment from 'moment';
-import getFlagURL from "./flagHelpers";
-import ModalTemplate from "./modalTemplate"
-import { getDetails } from "../api/tvmaze-api";
-import { postLike, getLikesList, postComment, getCommentList } from "../api/Involvement-api";
+import getFlagURL from './flagHelpers';
+import ModalTemplate from './modalTemplate';
+import { getDetails } from '../api/tvmaze-api';
+import { postComment, getCommentList } from '../api/involvement-api';
 
 export default class DetailsModal {
-
   constructor(parentElement = document.body) {
     this.detailsModalElement = document.createElement('section');
-    parentElement.appendChild(this.detailsModalElement)
+    parentElement.appendChild(this.detailsModalElement);
 
-    this.currentID = ''
-    this.currentDetails = {}
-    this.commentsList = []
-    this.visible = false
-    this.errors = []
+    this.currentID = '';
+    this.currentDetails = {};
+    this.commentsList = [];
+    this.visible = false;
+    this.errors = [];
+    this.changed = false;
   }
 
   init() {
-    this.loadModalTemplate()
-    this.listenForOpenModal()
-    this.listenForAddComment()
-    this.listForCancelComment()
-    this.listenForCloseModal()
+    this.loadModalTemplate();
+    this.listenForOpenModal();
+    this.listenForAddComment();
+    this.listForCancelComment();
+    this.listenForCloseModal();
   }
 
   countComments(commentsList = this.commentsList) {
-    if (typeof commentsList) {
-      return commentsList.length
-    } else {
-      return new Error('Excpected comment list to be an array')
+    if (Array.isArray(commentsList)) {
+      return commentsList.length;
     }
+    throw new Error('Excpected comment list to be an array');
   }
 
   loadModalTemplate() {
-    this.detailsModalElement.innerHTML = ModalTemplate
+    this.detailsModalElement.innerHTML = ModalTemplate;
   }
 
   listenForOpenModal() {
     window.onpopstate = async (e) => {
-      e.preventDefault()
+      e.preventDefault();
 
-      const locationHash = window.location.hash
-      const detailsID = this.parseDetailsID(locationHash)
+      const locationHash = window.location.hash;
+      const detailsID = this.parseDetailsID(locationHash);
 
       if (locationHash.indexOf('details') && detailsID) {
         try {
           this.currentID = detailsID;
 
-          const currentDetails = await getDetails(detailsID)
-          const commentsList = await getCommentList(this.currentID)
+          const currentDetails = await getDetails(detailsID);
+          const commentsList = await getCommentList(this.currentID);
 
-          this.currentDetails = currentDetails
-          this.commentsList = Array.isArray(commentsList) ? this.formatComments(commentsList) : []
-          this.updateModalDetails()
-          this.updateModalViewState()
-
+          this.currentDetails = currentDetails;
+          this.commentsList = Array.isArray(commentsList) ? this.formatComments(commentsList) : [];
+          this.updateModalDetails();
+          this.updateModalViewState();
         } catch (error) {
-          console.log(error)
-          this.errors.push(`${error.name} - ${error.message}`)
-          alert(`An error occured trying to load details for ${this.currentDetails.name}`)
+          console.log(error);
+          this.errors.push(`${error.name} - ${error.message}`);
+          alert(`An error occured trying to load details for ${this.currentDetails.name}`);
         }
       }
-    }
+    };
   }
 
   listenForAddComment() {
     const commentInput = document.getElementById('comment-input');
     const commentForm = document.getElementById('add-comment-form');
-    const commentsContainer = document.getElementById('modal-comments-list')
+    const commentsContainer = document.getElementById('modal-comments-list');
     const commenterNameInput = document.getElementById('commenter-name-input');
 
     commentForm.onsubmit = async (e) => {
-      e.preventDefault()
-      let username = commenterNameInput.value
-      let comment = commentInput.value
-      this.clearCommentForm()
+      e.preventDefault();
+      const username = commenterNameInput.value;
+      const comment = commentInput.value;
+      this.clearCommentForm();
       try {
         if (username && comment) {
-          await postComment(this.currentID, username, comment)
-          const commentObject = this.createCommentObject(username, comment)
-          const commentElement = this.createCommentElement(commentObject)
-          commentsContainer.appendChild(commentElement)
-          this.commentsList.push(commentObject)
-          this.updateModalCommentsCount()
+          await postComment(this.currentID, username, comment);
+          const commentObject = this.createCommentObject(username, comment);
+          const commentElement = this.createCommentElement(commentObject);
+          commentsContainer.appendChild(commentElement);
+          this.commentsList.push(commentObject);
+          this.updateModalCommentsCount();
         } else {
-          throw new Error('Input both username and comment')
+          throw new Error('Input both username and comment');
         }
       } catch (error) {
-        this.errors.push(`${error.name} - ${error.message}`)
-        alert(`An error occured trying post your comment`)
+        this.errors.push(`${error.name} - ${error.message}`);
+        alert('An error occured trying post your comment');
       }
-    }
+    };
   }
 
   createCommentObject(username, comment) {
+    this.changed = true;
     return {
       comment,
       username,
       creation_date: moment().format('LL'),
-      creation_unix_time: moment().format('X')
-    }
+      creation_unix_time: moment().format('X'),
+    };
   }
 
   listForCancelComment() {
     const cancelCommentButton = document.getElementById('cancel-comment-button');
 
     cancelCommentButton.onclick = (e) => {
-      e.preventDefault()
-      this.clearCommentForm()
-    }
+      e.preventDefault();
+      this.clearCommentForm();
+    };
   }
 
   listenForCloseModal() {
@@ -117,59 +116,57 @@ export default class DetailsModal {
 
     closeButton.onclick = (e) => {
       e.preventDefault();
-      this.visible = false
-      this.updateModalViewState()
-    }
+      this.visible = false;
+      this.updateModalViewState();
+    };
   }
 
   formatComments(comments) {
-    return comments.map(comment => {
-      return {
-        ...comment,
-        creation_date: moment(comment.creation_date).format('LL'),
-        creation_unix_time: moment(comment.creation_date).format('X')
-      }
-
-    }).sort((a, b) => b.creation_unix_time - a.creation_unix_time)
+    this.changed = true;
+    return comments.map((comment) => ({
+      ...comment,
+      creation_date: moment(comment.creation_date).format('LL'),
+      creation_unix_time: moment(comment.creation_date).format('X'),
+    })).sort((a, b) => b.creation_unix_time - a.creation_unix_time);
   }
 
   clearCommentForm() {
+    this.changed = true;
     const commenterNameInput = document.getElementById('commenter-name-input');
     const commentInput = document.getElementById('comment-input');
-    commenterNameInput.value = ''
-    commentInput.value = ''
+    commenterNameInput.value = '';
+    commentInput.value = '';
   }
 
   parseDetailsID(locationHash = window.location.hash) {
-    const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10)
-    if (detailsID) {
-      return detailsID
-    }
+    this.changed = true;
+    const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10);
+    return detailsID;
   }
 
   updateModalViewState() {
     const detailsModal = document.getElementById('details-modal');
-    detailsModal.style.display = this.visible ? 'block' : 'none'
+    detailsModal.style.display = this.visible ? 'block' : 'none';
   }
 
   updateModalDetails() {
-    this.visible = false
+    this.visible = false;
     this.updateModalDisplayImage();
-    this.updateModalBackgroudImage()
-    this.updateModalSeriesTitle()
-    this.updateModalSeriesLanguage()
-    this.updateModalSeriesRating()
-    this.updateModalSeriesGenre()
-    this.updateModalSeriesRuntime()
-    this.updateModalSeriesDescription()
-    this.updateModalCommentsCount()
-    this.updateModalCommentList()
-    this.visible = true
+    this.updateModalBackgroudImage();
+    this.updateModalSeriesTitle();
+    this.updateModalSeriesLanguage();
+    this.updateModalSeriesRating();
+    this.updateModalSeriesGenre();
+    this.updateModalSeriesRuntime();
+    this.updateModalSeriesDescription();
+    this.updateModalCommentsCount();
+    this.updateModalCommentList();
+    this.visible = true;
   }
 
   updateModalDisplayImage() {
     const displayImage = document.getElementById('modal-display-image');
-    displayImage.setAttribute('src', this.currentDetails.image.original)
+    displayImage.setAttribute('src', this.currentDetails.image.original);
   }
 
   updateModalBackgroudImage() {
@@ -179,55 +176,57 @@ export default class DetailsModal {
 
   updateModalSeriesTitle() {
     const seriesTitle = document.getElementById('modal-series-title');
-    seriesTitle.innerHTML = this.currentDetails.name
+    seriesTitle.innerHTML = this.currentDetails.name;
   }
 
   updateModalSeriesLanguage() {
     const seriesLanguage = document.getElementById('modal-series-langauage');
-    seriesLanguage.setAttribute('src', getFlagURL(this.currentDetails.language))
-    seriesLanguage.setAttribute('alt', this.currentDetails.language)
+    seriesLanguage.setAttribute('src', getFlagURL(this.currentDetails.language));
+    seriesLanguage.setAttribute('alt', this.currentDetails.language);
   }
 
   updateModalSeriesRating() {
     const seriesRating = document.getElementById('modal-series-rating');
-    seriesRating.innerHTML = this.currentDetails.rating.average
+    seriesRating.innerHTML = this.currentDetails.rating.average;
   }
 
   updateModalSeriesGenre() {
+    this.changed = true;
     const seriesGenre = document.getElementById('modal-series-genre');
-    seriesGenre.innerHTML = ''
+    seriesGenre.innerHTML = '';
     const mainGenre = document.createElement('li');
-    mainGenre.innerHTML = this.currentDetails.genres[0]
-    seriesGenre.appendChild(mainGenre)
+    mainGenre.innerHTML = `${this.currentDetails.genres[0]}`;
+    seriesGenre.appendChild(mainGenre);
   }
 
   updateModalSeriesRuntime() {
-    const seriesRuntime = document.getElementById('modal-series-runtime')
-    seriesRuntime.innerHTML = `${this.currentDetails.runtime} mins`
+    const seriesRuntime = document.getElementById('modal-series-runtime');
+    seriesRuntime.innerHTML = `${this.currentDetails.runtime} mins`;
   }
 
   updateModalSeriesDescription() {
-    const seriesDescription = document.getElementById('modal-series-description')
+    const seriesDescription = document.getElementById('modal-series-description');
     const cleanedDescription = this.currentDetails.summary.replace('<b>', '').replace('</b>', '');
-    seriesDescription.innerHTML = `${cleanedDescription}`
+    seriesDescription.innerHTML = `${cleanedDescription}`;
   }
 
   updateModalCommentsCount() {
     const commentsCount = document.getElementById('comment-count');
-    commentsCount.innerHTML = this.countComments(this.commentsList)
+    commentsCount.innerHTML = this.countComments(this.commentsList);
   }
 
   updateModalCommentList() {
-    const commentsContainer = document.getElementById('modal-comments-list')
-    commentsContainer.innerHTML = ''
-    this.commentsList.forEach(item => {
-      commentsContainer.appendChild(this.createCommentElement(item))
-    })
+    const commentsContainer = document.getElementById('modal-comments-list');
+    commentsContainer.innerHTML = '';
+    this.commentsList.forEach((item) => {
+      commentsContainer.appendChild(this.createCommentElement(item));
+    });
   }
 
   createCommentElement(commentObject) {
-    const comment = document.createElement('li')
-    comment.classList.add('comment')
+    this.changed = true;
+    const comment = document.createElement('li');
+    comment.classList.add('comment');
     comment.innerHTML = `
       <div class="avatar">
         <img src="https://avatars.dicebear.com/api/pixel-art-neutral/${commentObject.username}.svg" alt="${commentObject.username}">
@@ -238,7 +237,7 @@ export default class DetailsModal {
           <div class="comment-time">${commentObject.creation_date}</div>
         </div>
         <div class="comment-details">${commentObject.comment}</div>
-      </div>`
-    return comment
+      </div>`;
+    return comment;
   }
 }
