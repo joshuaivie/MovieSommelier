@@ -2,9 +2,10 @@
 
 :root {
   /* colors */
-  --primary-color: #000;
-  --text-color: #c5c5c5;
-  --title-color: #fff;
+  --primary-color: #111;
+  --secondary-color: #1835b1;
+  --secondary-color-light: #495aa1;
+  --text-color: #eee;
 
   /* fonts */
   --title-font: "Inter", sans-serif;
@@ -61,6 +62,19 @@ a {
   color: inherit;
 }
 
+button,
+.btn {
+  padding: 5px 10px;
+  background: var(--secondary-color);
+  color: var(--text-color);
+  border: none;
+}
+
+button:hover,
+.btn:hover {
+  background: var(--secondary-color-light);
+}
+
 a.active,
 a:hover {
   text-decoration: underline;
@@ -90,6 +104,65 @@ body > footer {
 }
 
 /* home */
+
+.home {
+  padding: 0 10vw;
+}
+
+.paginator {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.likes {
+  display: flex;
+  flex-direction: column;
+}
+
+.like {
+  background: none;
+  width: 40px;
+}
+
+.like img {
+  width: 100%;
+}
+
+.movie-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 40px;
+  margin-block: 40px;
+  padding: 0;
+}
+
+.img-placeholder {
+  background: #ddd4;
+  height: calc((80vw - 97px) * 0.468);
+  display: flex;
+  flex-direction: column;
+}
+
+li.movie.card {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.movie.card .btn,
+.movie.card button {
+  align-self: center;
+}
+
+.movie.card header {
+  display: flex;
+}
+
+.movie.card header > h2 {
+  flex: 1 1 auto;
+}
 
 /* details */
 .details-popup {
