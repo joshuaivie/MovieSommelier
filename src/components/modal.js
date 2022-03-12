@@ -1,5 +1,7 @@
 import { getDetails } from "../api/tvmaze-api";
+import { getCommentList } from "../api/Involvement-api";
 import getFlagURL from "./flagHelpers";
+import moment from 'moment';
 
 export default class DetailsModal {
 
@@ -9,8 +11,8 @@ export default class DetailsModal {
 
     this.currentID = ''
     this.currentDetails = {}
-    this.updatedModalDetails = false
-    this.visible = true
+    this.commentsList = []
+    this.visible = false
     this.errors = []
   }
 
@@ -28,13 +30,35 @@ export default class DetailsModal {
       const detailsID = this.parseDetailsID(locationHash)
 
       if (locationHash.indexOf('details') && detailsID) {
-        this.currentID = detailsID;
-        this.currentDetails = await getDetails(detailsID)
-        this.updateModalDetails()
-        this.visible = this.updatedModalDetails
-        this.updateModalViewState()
+        try {
+          this.currentID = detailsID;
+
+          const currentDetails = await getDetails(detailsID)
+          const commentsList = await getCommentList(this.currentID)
+
+          this.currentDetails = currentDetails
+          this.commentsList = Array.isArray(commentsList) ? this.formatComments(commentsList) : []
+          this.updateModalDetails()
+          this.updateModalViewState()
+
+        } catch (error) {
+          console.log(error)
+          this.errors.push(`${error.name} - ${error.message}`)
+          alert(`An error occured trying to load details for ${this.currentDetails.name}`)
+        }
       }
     }
+  }
+
+  formatComments(comments) {
+    return comments.map(comment => {
+      return {
+        ...comment,
+        creation_date: moment(comment.creation_date).format('LL'),
+        creation_unix_time: moment(comment.creation_date).format('X')
+      }
+
+    }).sort((a, b) => a.creation_unix_time - b.creation_unix_time)
   }
 
   listenForCloseModal() {
@@ -60,21 +84,17 @@ export default class DetailsModal {
   }
 
   updateModalDetails() {
-    try {
-      this.updatedModalDetails = false
-      this.updateModalDisplayImage();
-      this.updateModalBackgroudImage()
-      this.updateModalSeriesTitle()
-      this.updateModalSeriesLanguage()
-      this.updateModalSeriesRating()
-      this.updateModalSeriesGenre()
-      this.updateModalSeriesRuntime()
-      this.updateModalSeriesDescription()
-      this.updatedModalDetails = true
-    } catch (error) {
-      this.errors.push(`${error.name} - ${error.message}`)
-      alert(`An error occured trying to load details for ${this.currentDetails.name}`)
-    }
+    this.visible = false
+    this.updateModalDisplayImage();
+    this.updateModalBackgroudImage()
+    this.updateModalSeriesTitle()
+    this.updateModalSeriesLanguage()
+    this.updateModalSeriesRating()
+    this.updateModalSeriesGenre()
+    this.updateModalSeriesRuntime()
+    this.updateModalSeriesDescription()
+    this.updateModalCommentList()
+    this.visible = true
   }
 
   updateModalDisplayImage() {
@@ -105,6 +125,7 @@ export default class DetailsModal {
 
   updateModalSeriesGenre() {
     const seriesGenre = document.getElementById('modal-series-genre');
+    seriesGenre.innerHTML = ''
     const mainGenre = document.createElement('li');
     mainGenre.innerHTML = this.currentDetails.genres[0]
     seriesGenre.appendChild(mainGenre)
@@ -121,6 +142,30 @@ export default class DetailsModal {
     seriesDescription.innerHTML = `${cleanedDescription}`
   }
 
+  updateModalCommentList() {
+    const commentsContainer = document.getElementById('modal-comments-list')
+    commentsContainer.innerHTML = ''
+    this.commentsList.forEach(item => {
+      commentsContainer.appendChild(this.createCommentElement(item))
+    })
+  }
+
+  createCommentElement(commentObject) {
+    const comment = document.createElement('li')
+    comment.classList.add('comment')
+    comment.innerHTML = `
+      <div class="avatar">
+        <img src="https://avatars.dicebear.com/api/pixel-art-neutral/${commentObject.username}.svg" alt="${commentObject.username}">
+      </div>
+      <div class="comment-content">
+        <div class="comment-content-title">
+          <div class="commenter-name">${commentObject.username}</div>
+          <div class="comment-time">${commentObject.creation_date}</div>
+        </div>
+        <div class="comment-details">${commentObject.comment}</div>
+      </div>`
+    return comment
+  }
 
   loadModalTemplate() {
     this.detailsModalElement.innerHTML = `
@@ -158,6 +203,30 @@ export default class DetailsModal {
             <p id="modal-series-runtime"></p>
           </div>
           <div class="series-description" id="modal-series-description"></div>
+        </div>
+      <div class="comments-container">
+        <div class="add-comment-section">
+          <div class="series-subtitle">Add Comment</div>
+          <form  class="add-comment-form">
+            <ul>
+              <li>
+                <input type="text" placeholder="Enter Your Name" name="commenter-name-input" id="commenterNameInput" required>
+              </li>
+              <li>
+                <textarea rows="5" type="number" id="commentInput" name="coment-input" required min="1"
+                  placeholder="Enter Your Comment" required></textarea>
+              </li>
+              <li class="comment-form-buttons">
+                <button type="submit" class="light-button" id="submitScoreButton">Cancel</button>
+                <button type="submit" id="submitScoreButton">Comment</button>
+              </li>
+            </ul>
+          </form>
+        </div>
+        <div class="comments-list-section">
+          <div class="series-subtitle">Comment(s)</div>
+          <ul class="comments-list" id="modal-comments-list"></ul>
+        </div>
         </div>
       </div>
     </div>

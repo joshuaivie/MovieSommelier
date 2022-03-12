@@ -1,4 +1,4 @@
-const BASE_URL = ' https://us-central1-involvement-api.cloudfunctions.net/capstoneApi';
+const BASE_URL = 'https://us-central1-involvement-api.cloudfunctions.net/capstoneApi';
 const APP_ID = 'OAW88uh8tayXubZCqUNx';
 
 export async function like(item_id) {
