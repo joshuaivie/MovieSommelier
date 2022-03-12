@@ -2,6 +2,13 @@ import { getList } from './tvmaze-api';
 import './images/like.svg';
 import { getLikesList, like } from './Involvement-api';
 
+export async function seriesCount(promise) {
+  return promise.then((list) => {
+    list.count = list.length;
+    return list;
+  });
+}
+
 export default class Home {
   pages;
 
@@ -47,7 +54,7 @@ export default class Home {
     this.navigate(window.location.hash);
     window.addEventListener('popstate', () => this.navigate(window.location.hash));
     try {
-      this.series = await getList();
+      this.series = await seriesCount(getList());
       this.updateLikes(await getLikesList());
     } finally {
       this.container.appendChild(this.homeElement);
@@ -74,6 +81,7 @@ export default class Home {
 
   updateList() {
     this.homeElement.innerHTML = `
+      ${this.series.count ? `<div class="paginator">${this.series.count} total items</div>` : ''}
       <ul class="movie-list"> 
           ${this.pages[this.page].map((series) => `
           <li class="movie card">
