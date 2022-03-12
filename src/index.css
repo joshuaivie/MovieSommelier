@@ -17,7 +17,9 @@
   /* colors */
   --primary-color: #000;
   --text-color: #c5c5c5;
+  --alt-text-color: #c5c5c5;
   --title-color: #fff;
+  --body-color: #000;
   --secondary-color: #1835b1;
   --secondary-color-light: #495aa1;
 
@@ -38,7 +40,7 @@ ul {
 
 body {
   margin: 0;
-  background: var(--primary-color);
+  background: var(--body-color);
   color: var(--text-color);
   font-family: var(--text-font);
   font-weight: 400;
@@ -65,15 +67,20 @@ a {
 
 button,
 .btn {
-  padding: 5px 10px;
+  padding: 10px 10px;
   background: var(--secondary-color);
-  color: var(--text-color);
+  color: #fff;
   border: none;
 }
 
 button:hover,
 .btn:hover {
   background: var(--secondary-color-light);
+}
+
+body > footer a {
+  font-weight: 600;
+  color: #fff;
 }
 
 a.active,
@@ -85,23 +92,40 @@ a:hover {
 
 body > header {
   display: flex;
-  height: 68px;
-  padding: 10px 0;
-  justify-content: center;
+  padding: 30px 10vw;
+}
+
+body header nav {
+  width: 100%;
+}
+
+header .logo {
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  letter-spacing: -1px;
+}
+
+header .logo .slender {
+  font-weight: 400;
 }
 
 nav > ul {
   list-style: none;
-  justify-content: flex-end;
   display: flex;
-  width: calc(80vw - 85px);
+  justify-content: end;
   font-weight: bold;
 }
 
 /* footer */
 
 body > footer {
-  padding: 0 10vw;
+  padding: 80px 10vw 50px;
+  text-align: center;
+}
+
+body > footer .love {
+  color: rgb(214, 0, 0);
 }
 
 /* home */
@@ -110,10 +134,35 @@ body > footer {
   padding: 0 10vw;
 }
 
+.series-count {
+  font-size: 1rem;
+  display: block;
+  text-align: right;
+}
+
+.series-count .bold {
+  color: #fff;
+  font-weight: 900;
+}
+
 .paginator {
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 15px;
+  padding: 50px 0;
+}
+
+.paginator .btn {
+  padding: 10px 15px;
+  border-radius: 15px;
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 14px;
 }
 
 .likes {
@@ -133,17 +182,19 @@ body > footer {
 .movie-list {
   list-style: none;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-gap: 40px;
-  margin-block: 40px;
+  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-column-gap: 40px;
+  grid-row-gap: 80px;
+  margin: 40px 0;
   padding: 0;
 }
 
 .img-placeholder {
   background: #ddd4;
-  height: calc((80vw - 97px) * 0.468);
   display: flex;
   flex-direction: column;
+  border-radius: 15px;
+  overflow: hidden;
 }
 
 li.movie.card {
@@ -175,11 +226,19 @@ li.movie.card {
   align-self: center;
 }
 
+.movie.card .btn {
+  width: 100%;
+  text-align: center;
+  border-radius: 15px;
+}
+
 .movie.card header {
   display: flex;
 }
 
 .movie.card header > h2 {
+  font-size: 1.15rem;
+  color: #fff;
   flex: 1 1 auto;
 }
 
@@ -193,6 +252,7 @@ li.movie.card {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   display: none;
+  color: var(--alt-text-color);
 }
 
 .details-popup {
