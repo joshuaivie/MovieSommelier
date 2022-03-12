@@ -1,40 +1,39 @@
-import { getDetails } from "../api/tvmaze-api";
-import getFlagURL from "./flagHelpers";
+import { getDetails } from '../api/tvmaze-api';
+import getFlagURL from './flagHelpers';
 
 export default class DetailsModal {
-
   constructor(parentElement = document.body) {
     this.detailsModalElement = document.createElement('section');
-    parentElement.appendChild(this.detailsModalElement)
+    parentElement.appendChild(this.detailsModalElement);
 
-    this.currentID = ''
-    this.currentDetails = {}
-    this.updatedModalDetails = false
-    this.visible = true
-    this.errors = []
+    this.currentID = '';
+    this.currentDetails = {};
+    this.updatedModalDetails = false;
+    this.visible = true;
+    this.errors = [];
   }
 
   init() {
-    this.loadModalTemplate()
-    this.listenForOpenModal()
-    this.listenForCloseModal()
+    this.loadModalTemplate();
+    this.listenForOpenModal();
+    this.listenForCloseModal();
   }
 
   listenForOpenModal() {
     window.onpopstate = async (e) => {
-      e.preventDefault()
+      e.preventDefault();
 
-      const locationHash = window.location.hash
-      const detailsID = this.parseDetailsID(locationHash)
+      const locationHash = window.location.hash;
+      const detailsID = DetailsModal.parseDetailsID(locationHash);
 
       if (locationHash.indexOf('details') && detailsID) {
         this.currentID = detailsID;
-        this.currentDetails = await getDetails(detailsID)
-        this.updateModalDetails()
-        this.visible = this.updatedModalDetails
-        this.updateModalViewState()
+        this.currentDetails = await getDetails(detailsID);
+        this.updateModalDetails();
+        this.visible = this.updatedModalDetails;
+        this.updateModalViewState();
       }
-    }
+    };
   }
 
   listenForCloseModal() {
@@ -42,44 +41,42 @@ export default class DetailsModal {
 
     closeButton.onclick = (e) => {
       e.preventDefault();
-      this.visible = false
-      this.updateModalViewState()
-    }
+      this.visible = false;
+      this.updateModalViewState();
+    };
   }
 
-  parseDetailsID(locationHash = window.location.hash) {
-    const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10)
-    if (detailsID) {
-      return detailsID
-    }
+  static parseDetailsID(locationHash = window.location.hash) {
+    const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10);
+    return detailsID;
   }
 
   updateModalViewState() {
     const detailsModal = document.getElementById('details-modal');
-    detailsModal.style.display = this.visible ? 'flex' : 'none'
+    detailsModal.style.display = this.visible ? 'flex' : 'none';
   }
 
   updateModalDetails() {
     try {
-      this.updatedModalDetails = false
+      this.updatedModalDetails = false;
       this.updateModalDisplayImage();
-      this.updateModalBackgroudImage()
-      this.updateModalSeriesTitle()
-      this.updateModalSeriesLanguage()
-      this.updateModalSeriesRating()
-      this.updateModalSeriesGenre()
-      this.updateModalSeriesRuntime()
-      this.updateModalSeriesDescription()
-      this.updatedModalDetails = true
+      this.updateModalBackgroudImage();
+      this.updateModalSeriesTitle();
+      this.updateModalSeriesLanguage();
+      this.updateModalSeriesRating();
+      this.updateModalSeriesGenre();
+      this.updateModalSeriesRuntime();
+      this.updateModalSeriesDescription();
+      this.updatedModalDetails = true;
     } catch (error) {
-      this.errors.push(`${error.name} - ${error.message}`)
-      alert(`An error occured trying to load details for ${this.currentDetails.name}`)
+      this.errors.push(`${error.name} - ${error.message}`);
+      alert(`An error occured trying to load details for ${this.currentDetails.name}`);
     }
   }
 
   updateModalDisplayImage() {
     const displayImage = document.getElementById('modal-display-image');
-    displayImage.setAttribute('src', this.currentDetails.image.original)
+    displayImage.setAttribute('src', this.currentDetails.image.original);
   }
 
   updateModalBackgroudImage() {
@@ -89,38 +86,37 @@ export default class DetailsModal {
 
   updateModalSeriesTitle() {
     const seriesTitle = document.getElementById('modal-series-title');
-    seriesTitle.innerHTML = this.currentDetails.name
+    seriesTitle.innerHTML = this.currentDetails.name;
   }
 
   updateModalSeriesLanguage() {
     const seriesLanguage = document.getElementById('modal-series-langauage');
-    seriesLanguage.setAttribute('src', getFlagURL(this.currentDetails.language))
-    seriesLanguage.setAttribute('alt', this.currentDetails.language)
+    seriesLanguage.setAttribute('src', getFlagURL(this.currentDetails.language));
+    seriesLanguage.setAttribute('alt', this.currentDetails.language);
   }
 
   updateModalSeriesRating() {
     const seriesRating = document.getElementById('modal-series-rating');
-    seriesRating.innerHTML = this.currentDetails.rating.average
+    seriesRating.innerHTML = this.currentDetails.rating.average;
   }
 
   updateModalSeriesGenre() {
     const seriesGenre = document.getElementById('modal-series-genre');
     const mainGenre = document.createElement('li');
-    mainGenre.innerHTML = this.currentDetails.genres[0]
-    seriesGenre.appendChild(mainGenre)
+    mainGenre.innerHTML = `${this.currentDetails.genres[0]}`;
+    seriesGenre.appendChild(mainGenre);
   }
 
   updateModalSeriesRuntime() {
-    const seriesRuntime = document.getElementById('modal-series-runtime')
-    seriesRuntime.innerHTML = `${this.currentDetails.runtime} mins`
+    const seriesRuntime = document.getElementById('modal-series-runtime');
+    seriesRuntime.innerHTML = `${this.currentDetails.runtime} mins`;
   }
 
   updateModalSeriesDescription() {
-    const seriesDescription = document.getElementById('modal-series-description')
+    const seriesDescription = document.getElementById('modal-series-description');
     const cleanedDescription = this.currentDetails.summary.replace('<b>', '').replace('</b>', '');
-    seriesDescription.innerHTML = `${cleanedDescription}`
+    seriesDescription.innerHTML = `${cleanedDescription}`;
   }
-
 
   loadModalTemplate() {
     this.detailsModalElement.innerHTML = `
@@ -162,7 +158,6 @@ export default class DetailsModal {
       </div>
     </div>
   </section>
-    `
+    `;
   }
-
 }

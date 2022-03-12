@@ -1,6 +1,6 @@
-import { getList } from './tvmaze-api';
+import { getList } from './api/tvmaze-api';
 import './images/like.svg';
-import { getLikesList, like } from './Involvement-api';
+import { getLikesList, postLike } from './api/involvement-api';
 
 export async function seriesCount(promise) {
   return promise.then((list) => {
@@ -23,7 +23,7 @@ export default class Home {
     this.series = [];
     this.pageLength = pageLength;
     this.page = 0;
-    this.like = (e) => like(e.currentTarget.dataset.id)
+    this.like = (e) => postLike(e.currentTarget.dataset.id)
       .then(async () => {
         this.updateLikes(await getLikesList());
         this.updateList();
@@ -109,8 +109,8 @@ export default class Home {
       ${this.page > 2 ? '<a href="#home/1" class="btn">1</a>' : ''}
       ${this.page > 3 ? '<span>...</span>' : ''}
       ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
-      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 2), 0)) // eslint-disable-next-line indent
-      .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
+        .slice(Math.max(Math.min(this.pages.length - 5, this.page - 2), 0)) // eslint-disable-next-line indent
+        .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
       ${this.pages.length - this.page > 4 ? '<span>...</span>' : ''}
       ${this.pages.length - this.page > 3 ? `<a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
     </div>` : '';
