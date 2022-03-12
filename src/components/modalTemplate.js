@@ -1,5 +1,5 @@
-const ModalTemplate =
-  `<section class="details-popup" id="details-modal">
+const ModalTemplate = `
+  <section class="details-popup" id="details-modal">
     <div class="close-button" id="modal-close-button">
       <i class="fa-solid fa-close"></i>
     </div>
@@ -61,6 +61,6 @@ const ModalTemplate =
         </div>
       </div>
     </div>
-  </section>`
+  </section>`;
 
-export default ModalTemplate
+export default ModalTemplate;
