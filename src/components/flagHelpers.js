@@ -8,17 +8,17 @@ const getFlagURL = (language) => {
   let ISOCode;
   switch (language.toLocaleLowerCase()) {
     case 'french':
-      ISOCode = 'fr'
+      ISOCode = 'fr';
       break;
     case 'spanish':
-      ISOCode = 'es'
+      ISOCode = 'es';
       break;
     default:
-      ISOCode = 'gb'
+      ISOCode = 'gb';
       break;
   }
 
-  return `../images/${ISOCode}.svg`
-}
+  return `../images/${ISOCode}.svg`;
+};
 
-export default getFlagURL
+export default getFlagURL;
