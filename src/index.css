@@ -16,10 +16,10 @@
 :root {
   /* colors */
   --primary-color: #000;
-  --secondary-color: #1835b1;
-  --secondary-color-light: #495aa1;
   --text-color: #c5c5c5;
   --title-color: #fff;
+  --secondary-color: #1835b1;
+  --secondary-color-light: #495aa1;
 
   /* fonts */
   --title-font: "Inter", sans-serif;
@@ -184,6 +184,17 @@ li.movie.card {
 }
 
 /* details */
+.details-modal-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  display: none;
+}
+
 .details-popup {
   position: absolute;
   top: 50%;
@@ -197,7 +208,7 @@ li.movie.card {
   border: 1px solid rgba(255, 255, 255, 0.25);
   width: 80%;
   max-height: 85vh;
-  display: none;
+  display: flex;
 }
 
 .image-container {
@@ -209,8 +220,8 @@ li.movie.card {
 .close-button {
   position: absolute;
   z-index: 10;
-  top: 1.25rem;
-  right: 1.25rem;
+  top: 1.5rem;
+  right: 1.5rem;
   padding: 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.1);

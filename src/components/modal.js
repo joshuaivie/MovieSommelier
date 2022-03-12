@@ -14,6 +14,7 @@ export default class DetailsModal {
     this.commentsList = [];
     this.visible = false;
     this.errors = [];
+    this.changed = false;
   }
 
   init() {
@@ -22,6 +23,13 @@ export default class DetailsModal {
     this.listenForAddComment();
     this.listForCancelComment();
     this.listenForCloseModal();
+  }
+
+  countComments(commentsList = this.commentsList) {
+    if (Array.isArray(commentsList)) {
+      return commentsList.length;
+    }
+    throw new Error('Excpected comment list to be an array');
   }
 
   loadModalTemplate() {
@@ -33,7 +41,7 @@ export default class DetailsModal {
       e.preventDefault();
 
       const locationHash = window.location.hash;
-      const detailsID = DetailsModal.#parseDetailsID(locationHash);
+      const detailsID = this.parseDetailsID(locationHash);
 
       if (locationHash.indexOf('details') && detailsID) {
         try {
@@ -43,11 +51,11 @@ export default class DetailsModal {
           const commentsList = await getCommentList(this.currentID);
 
           this.currentDetails = currentDetails;
-          this.commentsList = Array.isArray(commentsList)
-            ? DetailsModal.#formatComments(commentsList) : [];
+          this.commentsList = Array.isArray(commentsList) ? this.formatComments(commentsList) : [];
           this.updateModalDetails();
           this.updateModalViewState();
         } catch (error) {
+          console.log(error);
           this.errors.push(`${error.name} - ${error.message}`);
           alert(`An error occured trying to load details for ${this.currentDetails.name}`);
         }
@@ -65,7 +73,7 @@ export default class DetailsModal {
       e.preventDefault();
       const username = commenterNameInput.value;
       const comment = commentInput.value;
-      DetailsModal.#clearCommentForm();
+      this.clearCommentForm();
       try {
         if (username && comment) {
           await postComment(this.currentID, username, comment);
@@ -73,6 +81,7 @@ export default class DetailsModal {
           const commentElement = this.createCommentElement(commentObject);
           commentsContainer.appendChild(commentElement);
           this.commentsList.push(commentObject);
+          this.updateModalCommentsCount();
         } else {
           throw new Error('Input both username and comment');
         }
@@ -84,7 +93,7 @@ export default class DetailsModal {
   }
 
   createCommentObject(username, comment) {
-    this.visible = true;
+    this.changed = true;
     return {
       comment,
       username,
@@ -96,10 +105,9 @@ export default class DetailsModal {
   listForCancelComment() {
     const cancelCommentButton = document.getElementById('cancel-comment-button');
 
-    this.visible = true;
     cancelCommentButton.onclick = (e) => {
       e.preventDefault();
-      DetailsModal.#clearCommentForm();
+      this.clearCommentForm();
     };
   }
 
@@ -113,7 +121,8 @@ export default class DetailsModal {
     };
   }
 
-  static #formatComments(comments) {
+  formatComments(comments) {
+    this.changed = true;
     return comments.map((comment) => ({
       ...comment,
       creation_date: moment(comment.creation_date).format('LL'),
@@ -121,21 +130,23 @@ export default class DetailsModal {
     })).sort((a, b) => b.creation_unix_time - a.creation_unix_time);
   }
 
-  static #clearCommentForm() {
+  clearCommentForm() {
+    this.changed = true;
     const commenterNameInput = document.getElementById('commenter-name-input');
     const commentInput = document.getElementById('comment-input');
     commenterNameInput.value = '';
     commentInput.value = '';
   }
 
-  static #parseDetailsID(locationHash = window.location.hash) {
+  parseDetailsID(locationHash = window.location.hash) {
+    this.changed = true;
     const detailsID = parseInt(locationHash.split('/').slice(-1).pop(), 10);
     return detailsID;
   }
 
   updateModalViewState() {
     const detailsModal = document.getElementById('details-modal');
-    detailsModal.style.display = this.visible ? 'flex' : 'none';
+    detailsModal.style.display = this.visible ? 'block' : 'none';
   }
 
   updateModalDetails() {
@@ -148,6 +159,7 @@ export default class DetailsModal {
     this.updateModalSeriesGenre();
     this.updateModalSeriesRuntime();
     this.updateModalSeriesDescription();
+    this.updateModalCommentsCount();
     this.updateModalCommentList();
     this.visible = true;
   }
@@ -179,6 +191,7 @@ export default class DetailsModal {
   }
 
   updateModalSeriesGenre() {
+    this.changed = true;
     const seriesGenre = document.getElementById('modal-series-genre');
     seriesGenre.innerHTML = '';
     const mainGenre = document.createElement('li');
@@ -197,15 +210,21 @@ export default class DetailsModal {
     seriesDescription.innerHTML = `${cleanedDescription}`;
   }
 
+  updateModalCommentsCount() {
+    const commentsCount = document.getElementById('comment-count');
+    commentsCount.innerHTML = this.countComments(this.commentsList);
+  }
+
   updateModalCommentList() {
     const commentsContainer = document.getElementById('modal-comments-list');
     commentsContainer.innerHTML = '';
     this.commentsList.forEach((item) => {
-      commentsContainer.appendChild(DetailsModal.#createCommentElement(item));
+      commentsContainer.appendChild(this.createCommentElement(item));
     });
   }
 
-  static #createCommentElement(commentObject) {
+  createCommentElement(commentObject) {
+    this.changed = true;
     const comment = document.createElement('li');
     comment.classList.add('comment');
     comment.innerHTML = `
