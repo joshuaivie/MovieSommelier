@@ -106,13 +106,13 @@ export default class Home {
 
   paginator() {
     return this.pages.length > 0 ? `<div class="paginator">
-      ${this.page > 4 ? `<a href="#home/1" class="btn">1</a>
-      <span>...</span>` : ''}
+      ${this.page > 2 ? '<a href="#home/1" class="btn">1</a>' : ''}
+      ${this.page > 3 ? '<span>...</span>' : ''}
       ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
-      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 3), 0)) // eslint-disable-next-line indent
+      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 2), 0)) // eslint-disable-next-line indent
       .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
-      ${this.pages.length - this.page > 5 ? `<span>...</span>
-      <a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
+      ${this.pages.length - this.page > 4 ? '<span>...</span>' : ''}
+      ${this.pages.length - this.page > 3 ? `<a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
     </div>` : '';
   }
 }
