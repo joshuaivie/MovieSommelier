@@ -1,7 +1,7 @@
 const BASE_URL = 'https://us-central1-involvement-api.cloudfunctions.net/capstoneApi';
 const APP_ID = 'OAW88uh8tayXubZCqUNx';
 
-export async function like(item_id) {
+export async function postLike(item_id) {
     return await fetch(`${BASE_URL}/apps/${APP_ID}/likes`,
         {
             method: 'POST',

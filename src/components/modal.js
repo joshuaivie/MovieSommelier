@@ -2,7 +2,7 @@ import moment from 'moment';
 import getFlagURL from "./flagHelpers";
 import ModalTemplate from "./modalTemplate"
 import { getDetails } from "../api/tvmaze-api";
-import { postComment, getCommentList } from "../api/Involvement-api";
+import { postLike, getLikesList, postComment, getCommentList } from "../api/Involvement-api";
 
 export default class DetailsModal {
 
@@ -23,6 +23,14 @@ export default class DetailsModal {
     this.listenForAddComment()
     this.listForCancelComment()
     this.listenForCloseModal()
+  }
+
+  countComments(commentsList = this.commentsList) {
+    if (typeof commentsList) {
+      return commentsList.length
+    } else {
+      return new Error('Excpected comment list to be an array')
+    }
   }
 
   loadModalTemplate() {
@@ -75,6 +83,7 @@ export default class DetailsModal {
           const commentElement = this.createCommentElement(commentObject)
           commentsContainer.appendChild(commentElement)
           this.commentsList.push(commentObject)
+          this.updateModalCommentsCount()
         } else {
           throw new Error('Input both username and comment')
         }
@@ -140,7 +149,7 @@ export default class DetailsModal {
 
   updateModalViewState() {
     const detailsModal = document.getElementById('details-modal');
-    detailsModal.style.display = this.visible ? 'flex' : 'none'
+    detailsModal.style.display = this.visible ? 'block' : 'none'
   }
 
   updateModalDetails() {
@@ -153,6 +162,7 @@ export default class DetailsModal {
     this.updateModalSeriesGenre()
     this.updateModalSeriesRuntime()
     this.updateModalSeriesDescription()
+    this.updateModalCommentsCount()
     this.updateModalCommentList()
     this.visible = true
   }
@@ -200,6 +210,11 @@ export default class DetailsModal {
     const seriesDescription = document.getElementById('modal-series-description')
     const cleanedDescription = this.currentDetails.summary.replace('<b>', '').replace('</b>', '');
     seriesDescription.innerHTML = `${cleanedDescription}`
+  }
+
+  updateModalCommentsCount() {
+    const commentsCount = document.getElementById('comment-count');
+    commentsCount.innerHTML = this.countComments(this.commentsList)
   }
 
   updateModalCommentList() {
