@@ -18,7 +18,7 @@ const getFlagURL = (language) => {
       break;
   }
 
-  return `../images/${ISOCode}.svg`;
+  return `./images/${ISOCode}.svg`;
 };
 
 export default getFlagURL;
