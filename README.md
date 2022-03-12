@@ -1,10 +1,17 @@
 ![](https://img.shields.io/badge/Microverse-blueviolet)
 
-# Leaderboard
+# Movie Somollier
 
-![screenshot](./src/images/ultimate-leaderboard.png)
+![screenshot](./src/images/home.png)
+![screenshot](./src/images/details.png)
 
->
+> The Movie Somollier app, is an platform on which movie lovers can share thier thoughts about their favorite movies and series. Data is sourced from the the incredible [TVMaze](https://www.tvmaze.com/api) open API. Those guys are awesome! After we retrieve data from the movie data from TVMaze the application stores user interactions (Likes and Comments) on a seperate interaction API.
+
+> You can check out the live link below to get a feel of the application. Improvements are also welcome. You can follow the instructions below to set up the project on your local machine. Thanks for checking out this project. We hope you enjoy exploring it as much as we enjoyed building it.
+
+## Live Demo
+
+[Live Demo Link](https://joshuaivie.github.io/MovieSommelier/)
 
 ## Built With
 
@@ -12,10 +19,6 @@
 - CSS
 - Javascript
 - Webpack
-
-## Live Demo
-
-[Live Demo Link]()
 
 ## Getting Started
 
@@ -29,10 +32,10 @@
 
 - Run git clone on this project at the desired directory:
   ```
-  git clone
+  git clone https://github.com/joshuaivie/MovieSommelier.git
   ```
   ```
-  cd Ultimate-Leaderboard
+  cd MovieSommelier
   ```
 - Install dependencies
 

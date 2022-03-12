@@ -1,5 +1,9 @@
 import './index.css';
 import './images/Logo.png';
-import Home from './home';
+import Home from './components/home';
+import DetailsModal from './components/modal';
 
-new Home(document.getElementById('main')).init();
+const home = new Home(document.getElementById('main'));
+const modal = new DetailsModal();
+home.init();
+modal.init();
