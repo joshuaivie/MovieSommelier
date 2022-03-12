@@ -1,6 +1,13 @@
 import { getList } from './tvmaze-api';
 import './images/like.svg';
-import { getLikesList } from './Involvement-api';
+import { getLikesList, like } from './Involvement-api';
+
+export async function seriesCount(promise) {
+  return promise.then((list) => {
+    list.count = list.length;
+    return list;
+  });
+}
 
 export default class Home {
   pages;
@@ -16,6 +23,11 @@ export default class Home {
     this.series = [];
     this.pageLength = pageLength;
     this.page = 0;
+    this.like = (e) => like(e.currentTarget.dataset.id)
+      .then(async () => {
+        this.updateLikes(await getLikesList());
+        this.updateList();
+      });
   }
 
   get series() {
@@ -42,14 +54,18 @@ export default class Home {
     this.navigate(window.location.hash);
     window.addEventListener('popstate', () => this.navigate(window.location.hash));
     try {
-      this.series = await getList();
-      (await getLikesList()).forEach((element) => {
-        this.seriesMap[element.item_id].likes = element.likes;
-      });
+      this.series = await seriesCount(getList());
+      this.updateLikes(await getLikesList());
     } finally {
       this.container.appendChild(this.homeElement);
       this.updateList();
     }
+  }
+
+  updateLikes(likes) {
+    likes.forEach((element) => {
+      this.seriesMap[element.item_id].likes = element.likes;
+    });
   }
 
   navigate(hash) {
@@ -65,34 +81,38 @@ export default class Home {
 
   updateList() {
     this.homeElement.innerHTML = `
-        <ul class="movie-list"> 
-            ${this.pages[this.page].map((series) => `
-            <li class="movie card">
+      ${this.series.count ? `<div class="paginator">${this.series.count} total items</div>` : ''}
+      <ul class="movie-list"> 
+          ${this.pages[this.page].map((series) => `
+          <li class="movie card">
+              <div class="img-placeholder">
                 <img src="${series.image.medium}">
-                <header>
-                    <h2>${series.name}</h2>
-                    <div class="likes">
-                        <button class="like"><img src="./images/like.svg"></button>
-                        <span>${series.likes} likes</span>
-                    </div>
-                </header>
-                <a href="#details/${series.id}" class="btn">Coments</a>
-                <a class="btn">Reservations</a>
-            </li>`).join('')}
-        </ul>
-        ${this.paginator()}
-        `;
+              </div>
+              <header>
+                  <h2>${series.name}</h2>
+                  <div class="likes">
+                      <button class="like" data-id="${series.id}"><img src="./images/like.svg"></button>
+                      <span>${series.likes} likes</span>
+                  </div>
+              </header>
+              <a href="#details/${series.id}" class="btn">Coments</a>
+              <a class="btn">Reservations</a>
+          </li>`).join('')}
+      </ul>
+      ${this.paginator()}
+      `;
+    document.querySelectorAll('.like').forEach((likeBtn) => likeBtn.addEventListener('click', this.like));
   }
 
   paginator() {
     return this.pages.length > 0 ? `<div class="paginator">
-      ${this.page > 4 ? `<a href="#home/1" class="btn">1</a>
-      <span>...</span>` : ''}
+      ${this.page > 2 ? '<a href="#home/1" class="btn">1</a>' : ''}
+      ${this.page > 3 ? '<span>...</span>' : ''}
       ${[...Array(Math.min(this.pages.length, Math.max(this.page + 3, 5))).keys()] // eslint-disable-next-line indent, max-len
-      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 3), 0)) // eslint-disable-next-line indent
+      .slice(Math.max(Math.min(this.pages.length - 5, this.page - 2), 0)) // eslint-disable-next-line indent
       .map((page) => `<a href="#home/${page + 1}" class="btn">${page + 1}</a>`).join('')}
-      ${this.pages.length - this.page > 5 ? `<span>...</span>
-      <a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
+      ${this.pages.length - this.page > 4 ? '<span>...</span>' : ''}
+      ${this.pages.length - this.page > 3 ? `<a href="#home/${this.pages.length}" class="btn">${this.pages.length}</a>` : ''}
     </div>` : '';
   }
 }
