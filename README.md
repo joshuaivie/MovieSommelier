@@ -1,6 +1,6 @@
 ![](https://img.shields.io/badge/Microverse-blueviolet)
 
-# Movie Somollier
+# Movie Sommelier
 
 ![screenshot](./src/images/movie-sommelier.gif)
 
