@@ -2,9 +2,9 @@
 
 # Movie Somollier
 
-![screenshot](./src/images/movie-somollier.gif)
+![screenshot](./src/images/movie-sommelier.gif)
 
-> The Movie Somollier app is a platform on which movie lovers can share their thoughts about their favourite movies and series. Data is sourced from the incredible [TVMaze](https://www.tvmaze.com/api) open API. After retrieving data from TVMaze, the application stores user interactions (Likes and Comments) on a separate interaction API.
+> The Movie Sommelier app is a platform on which movie lovers can share their thoughts about their favourite movies and series. Data is sourced from the incredible [TVMaze](https://www.tvmaze.com/api) open API. After retrieving data from TVMaze, the application stores user interactions (Likes and Comments) on a separate interaction API.
 
 > You can check out the live link below to get a feel of the application. Improvements are also welcome. You can follow the instructions below to set up the project on your local machine. Thanks for checking out this project. We hope you enjoy exploring it as much as we enjoyed building it.
 
